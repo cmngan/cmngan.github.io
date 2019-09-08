@@ -48,9 +48,12 @@ recognition.onresult = function (event) {
   })
 }
 
+let recError = null
 recognition.onend = function () {
+  if(recError === 'not-allowed') return
+  recError = null
   console.log('restart')
-  recognition.start();
+  recognition.start()
 }
 
 recognition.onnomatch = function (event) {
@@ -58,7 +61,8 @@ recognition.onnomatch = function (event) {
 }
 
 recognition.onerror = function (event) {
-  if(event.error === 'no-speech') return;
+  if(event.error === 'no-speech') return
+  recError = event.error
   console.log(event)
 }
 
