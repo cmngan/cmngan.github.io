@@ -1,5 +1,5 @@
 const commands = require('commandConfig');
-const keywords = Object.keys(commands),
+const keywords = Object.keys(commands);
 const minNextCommandTime = 2000;
 let shouldSkipCommand = false;
 
