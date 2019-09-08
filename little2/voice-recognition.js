@@ -1,4 +1,3 @@
-const keywords = Object.keys(commands);
 const minNextCommandTime = 2000;
 let shouldSkipCommand = false;
 
@@ -8,6 +7,7 @@ let shouldSkipCommand = false;
 var synth = window.speechSynthesis;
 var voice;
 var speak = function(text) {
+  console.log(text)
   var utterThis = new SpeechSynthesisUtterance(text);
   voice = voice || synth.getVoices().find(speechVoice=>speechVoice.lang === 'zh-HK');
 
@@ -41,6 +41,7 @@ document.body.onload = function () {
 recognition.onresult = function (event) {
   var last = event.results.length - 1;
   var results = new Array(event.results[last].length).fill(null).map((_,i)=>(event.results[last][i] || {}).transcript);
+  console.log(results)
   results.forEach( async result => {
     const saySth = await response(result)
     if(saySth) speak(saySth)
@@ -63,6 +64,7 @@ recognition.onerror = function (event) {
 
 function response(result) {
   if(result && !shouldSkipCommand) {
+    const keywords = Object.keys(commands);
     keyword = keywords.find(key => result.includes(key));
     if(keyword) {
       shouldSkipCommand = true;
