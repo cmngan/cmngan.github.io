@@ -42,6 +42,7 @@ recognition.onresult = function (event) {
   var last = event.results.length - 1;
   var results = new Array(event.results[last].length).fill(null).map((_,i)=>(event.results[last][i] || {}).transcript);
   console.log(results)
+  document.getElementById('voice').innerHTML = 'I heard: ' + results.join(', ')
   results.forEach( async result => {
     const saySth = await response(result)
     if(saySth) speak(saySth)
