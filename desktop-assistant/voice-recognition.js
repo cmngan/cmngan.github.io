@@ -1,5 +1,9 @@
+const commands = require('commandConfig');
+const keywords = Object.keys(commands),
+const minNextCommandTime = 2000;
+let shouldSkipCommand = false;
 
-var xhr = new XMLHttpRequest();
+// var xhr = new XMLHttpRequest();
 
 // text to speech
 var synth = window.speechSynthesis;
@@ -38,19 +42,10 @@ document.body.onload = function () {
 recognition.onresult = function (event) {
   var last = event.results.length - 1;
   var results = new Array(event.results[last].length).fill(null).map((_,i)=>(event.results[last][i] || {}).transcript);
-  xhr.open("GET", './'+results.join(','), true);
- // xhttp.setRequestHeader("Content-type", "application/json");
-  xhr.send();
-  xhr.onload = function () {
-    if (xhr.readyState === xhr.DONE) {
-      if (xhr.status === 200) {
-        if(xhr.responseText) {
-          speak(xhr.responseText)
-        }
-      }
-    }
-  };
-  //actionConfig[results[0]] && actionConfig[results[0]]()
+  results.forEach( async result => {
+    const saySth = await response(result)
+    if(saySth) speak(saySth)
+  })
 }
 
 recognition.onend = function () {
@@ -65,4 +60,15 @@ recognition.onnomatch = function (event) {
 recognition.onerror = function (event) {
   if(event.error === 'no-speech') return;
   console.log(event)
+}
+
+function response(result) {
+  if(result && !shouldSkipCommand) {
+    keyword = keywords.find(key => result.includes(key));
+    if(keyword) {
+      shouldSkipCommand = true;
+      setTimeout(()=> shouldSkipCommand = false, minNextCommandTime)
+    }
+    return keyword && commands[keyword](result);
+  }
 }
