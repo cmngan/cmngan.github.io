@@ -43,10 +43,7 @@ recognition.onresult = function (event) {
   var results = new Array(event.results[last].length).fill(null).map((_,i)=>(event.results[last][i] || {}).transcript);
   console.log(results)
   document.getElementById('voice').innerHTML = 'I heard: ' + results.join(', ')
-  results.forEach( async result => {
-    const saySth = await response(result)
-    if(saySth) speak(saySth)
-  })
+  results.forEach(response)
 }
 
 let recError = null
@@ -67,14 +64,13 @@ recognition.onerror = function (event) {
   console.log(event)
 }
 
-function response(result) {
+async function response(result) {
   if(result && !shouldSkipCommand) {
-    const keywords = Object.keys(commands);
-    keyword = keywords.find(key => result.includes(key));
-    if(keyword) {
-      shouldSkipCommand = true;
-      setTimeout(()=> shouldSkipCommand = false, minNextCommandTime)
-    }
-    return keyword && commands[keyword](result);
+    const keywords = Object.keys(commands)
+    keyword = keywords.find(key => result.includes(key))
+    if(keyword) shouldSkipCommand = true
+    const r = keyword && await commands[keyword](result)
+    if(keyword) setTimeout(()=> shouldSkipCommand = false, minNextCommandTime)
+    if(r) speak(r)
   }
 }
