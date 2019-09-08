@@ -55,7 +55,7 @@ recognition.onresult = function (event) {
 
 recognition.onend = function () {
   console.log('restart')
-  // recognition.start();
+  recognition.start();
 }
 
 recognition.onnomatch = function (event) {
